@@ -99,8 +99,11 @@ function App() {
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Try milk, apple, chicken, or rice"
+              placeholder="Try milk, apple*, *chicken, or chick*n"
             />
+            <p className="search-hint">
+              Use <code>*</code> as a wildcard: <code>apple*</code> (starts with), <code>*milk</code> (ends with), or <code>chick*n</code> (pattern).
+            </p>
             <div className="button-row">
               <button className="primary-button" type="submit" disabled={isLoading}>
                 {isLoading ? 'Searching...' : 'Search'}

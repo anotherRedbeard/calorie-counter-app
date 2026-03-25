@@ -29,6 +29,20 @@ The Vite dev server proxies `/api` requests to `http://localhost:5268`.
 - `GET /api/health` - simple connectivity check for local development
 - `GET /api/foods/search?q=milk` - returns up to 25 matching foods with portion sizes and calories
 
+### Wildcard search
+
+The search endpoint supports `*` as a wildcard character for flexible matching:
+
+| Pattern    | Meaning                        | Example matches               |
+|------------|--------------------------------|-------------------------------|
+| `milk`     | substring match (default)      | "1% milk (low fat)", "milk"   |
+| `apple*`   | starts with "apple"            | "apple juice", "applesauce"   |
+| `*milk`    | ends with "milk"               | "chocolate milk", "skim milk" |
+| `chick*n`  | starts with "chick", ends "n"  | "chicken"                     |
+| `*milk*`   | contains "milk" (any position) | "1% milk (low fat)"           |
+
+All searches are case-insensitive. When no `*` is present the search falls back to a simple substring match.
+
 ## Data transformation
 
 Generate the searchable food JSON from the USDA MyPyramid source:
