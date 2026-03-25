@@ -19,7 +19,7 @@ type FoodSearchResponse = {
 function App() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<FoodSearchResult[]>([])
-  const [totalMatches, setTotalMatches] = useState(0)
+  const [totalMatches, setTotalMatches] = useState<number | null>(null)
   const [warning, setWarning] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -38,6 +38,7 @@ function App() {
     const trimmedQuery = query.trim()
     if (!trimmedQuery) {
       setResults([])
+      setTotalMatches(null)
       setWarning('Please enter a food description before searching.')
       return
     }
@@ -105,7 +106,7 @@ function App() {
   const handleClear = () => {
     setQuery('')
     setResults([])
-    setTotalMatches(0)
+    setTotalMatches(null)
     setWarning(null)
   }
 
@@ -154,12 +155,13 @@ function App() {
 
         <article className="card results-card">
           <div className="results-header">
-            <h2>Results</h2>
-            {totalMatches > 0 && (
-              <p>
-                Showing {results.length} of {totalMatches} matches.
-              </p>
-            )}
+            <h2>
+              Results
+              {totalMatches != null && (
+                <span className="match-count" aria-label={`${totalMatches} total ${totalMatches === 1 ? 'match' : 'matches'} found`}>{totalMatches} {totalMatches === 1 ? 'match' : 'matches'}</span>
+              )}
+            </h2>
+            <p>Limited to the first 25 matches.</p>
           </div>
 
           <div className="results-panel" role="region" aria-live="polite">

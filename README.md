@@ -27,8 +27,7 @@ The Vite dev server proxies `/api` requests to `http://localhost:5268`.
 ## Current API surface
 
 - `GET /api/health` - simple connectivity check for local development
-- `GET /api/foods/search?q=milk` - returns up to 25 matching foods with portion sizes and calories
-  - `skip` (optional, default `0`) - number of results to skip for incremental loading (e.g. `?q=milk&skip=25`)
+- `GET /api/foods/search?q=milk` - returns up to 25 matching foods with portion sizes and calories; the total match count is shown beside the results heading
 
 ## Data transformation
 
