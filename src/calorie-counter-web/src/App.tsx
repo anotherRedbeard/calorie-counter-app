@@ -19,6 +19,7 @@ type FoodSearchResponse = {
 function App() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<FoodSearchResult[]>([])
+  const [totalMatches, setTotalMatches] = useState<number | null>(null)
   const [warning, setWarning] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -37,6 +38,7 @@ function App() {
     const trimmedQuery = query.trim()
     if (!trimmedQuery) {
       setResults([])
+      setTotalMatches(null)
       setWarning('Please enter a food description before searching.')
       return
     }
@@ -56,9 +58,11 @@ function App() {
 
       const data = (await response.json()) as FoodSearchResponse
       setResults(data.results)
+      setTotalMatches(data.totalMatches)
       setWarning(data.warning)
     } catch (error) {
       setResults([])
+      setTotalMatches(0)
       setWarning(
         error instanceof Error
           ? error.message
@@ -72,6 +76,7 @@ function App() {
   const handleClear = () => {
     setQuery('')
     setResults([])
+    setTotalMatches(null)
     setWarning(null)
   }
 
@@ -120,7 +125,12 @@ function App() {
 
         <article className="card results-card">
           <div className="results-header">
-            <h2>Results</h2>
+            <h2>
+              Results
+              {totalMatches != null && (
+                <span className="match-count" aria-label={`${totalMatches} total ${totalMatches === 1 ? 'match' : 'matches'} found`}>{totalMatches} {totalMatches === 1 ? 'match' : 'matches'}</span>
+              )}
+            </h2>
             <p>Limited to the first 25 matches.</p>
           </div>
 
