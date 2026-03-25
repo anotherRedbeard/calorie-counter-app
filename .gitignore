@@ -1,0 +1,9 @@
+/.DS_Store
+/.npm-cache/
+/data/raw/
+
+/src/CalorieCounter.Api/bin/
+/src/CalorieCounter.Api/obj/
+
+/src/calorie-counter-web/node_modules/
+/src/calorie-counter-web/dist/
