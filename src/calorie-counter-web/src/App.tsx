@@ -19,6 +19,7 @@ type FoodSearchResponse = {
 function App() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<FoodSearchResult[]>([])
+  const [totalMatches, setTotalMatches] = useState<number | null>(null)
   const [warning, setWarning] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -37,6 +38,7 @@ function App() {
     const trimmedQuery = query.trim()
     if (!trimmedQuery) {
       setResults([])
+      setTotalMatches(null)
       setWarning('Please enter a food description before searching.')
       return
     }
@@ -56,9 +58,11 @@ function App() {
 
       const data = (await response.json()) as FoodSearchResponse
       setResults(data.results)
+      setTotalMatches(data.totalMatches)
       setWarning(data.warning)
     } catch (error) {
       setResults([])
+      setTotalMatches(0)
       setWarning(
         error instanceof Error
           ? error.message
@@ -69,9 +73,40 @@ function App() {
     }
   }
 
+  const handleLoadMore = async () => {
+    const trimmedQuery = query.trim()
+    if (!trimmedQuery) return
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch(
+        `/api/foods/search?q=${encodeURIComponent(trimmedQuery)}&skip=${results.length}`,
+      )
+
+      if (!response.ok) {
+        const problem = (await response.json()) as { detail?: string; title?: string }
+        throw new Error(problem.detail ?? problem.title ?? 'Loading more results failed.')
+      }
+
+      const data = (await response.json()) as FoodSearchResponse
+      setResults((prev) => [...prev, ...data.results])
+      setTotalMatches(data.totalMatches)
+    } catch (error) {
+      setWarning(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong while loading more results.',
+      )
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleClear = () => {
     setQuery('')
     setResults([])
+    setTotalMatches(null)
     setWarning(null)
   }
 
@@ -81,7 +116,7 @@ function App() {
         <p className="eyebrow">Calorie Counter</p>
         <h1>Search USDA MyPyramid food data and compare calories by portion.</h1>
         <p className="summary">
-          Enter a food description, run a search, and review up to 25 matching
+          Enter a food description, run a search, and review matching
           foods with their portion sizes and calories.
         </p>
       </section>
@@ -99,8 +134,11 @@ function App() {
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Try milk, apple, chicken, or rice"
+              placeholder="Try milk, apple*, *chicken, or chick*n"
             />
+            <p className="search-hint">
+              Use <code>*</code> as a wildcard: <code>apple*</code> (starts with), <code>*milk</code> (ends with), or <code>chick*n</code> (pattern).
+            </p>
             <div className="button-row">
               <button className="primary-button" type="submit" disabled={isLoading}>
                 {isLoading ? 'Searching...' : 'Search'}
@@ -120,7 +158,12 @@ function App() {
 
         <article className="card results-card">
           <div className="results-header">
-            <h2>Results</h2>
+            <h2>
+              Results
+              {totalMatches != null && (
+                <span className="match-count" aria-label={`${totalMatches} total ${totalMatches === 1 ? 'match' : 'matches'} found`}>{totalMatches} {totalMatches === 1 ? 'match' : 'matches'}</span>
+              )}
+            </h2>
             <p>Limited to the first 25 matches.</p>
           </div>
 
@@ -141,6 +184,17 @@ function App() {
                   </li>
                 ))}
               </ul>
+            )}
+
+            {results.length > 0 && results.length < totalMatches && (
+              <button
+                className="load-more-button"
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Load more'}
+              </button>
             )}
           </div>
         </article>

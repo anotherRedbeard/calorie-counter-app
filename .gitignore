@@ -5,5 +5,8 @@
 /src/CalorieCounter.Api/bin/
 /src/CalorieCounter.Api/obj/
 
+/tests/CalorieCounter.Api.Tests/bin/
+/tests/CalorieCounter.Api.Tests/obj/
+
 /src/calorie-counter-web/node_modules/
 /src/calorie-counter-web/dist/
