@@ -177,6 +177,29 @@
   color: #1d4ed8;
 }
 
+.load-more-button {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.load-more-button:hover {
+  background: #dbeafe;
+}
+
+.load-more-button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
 @media (max-width: 720px) {
   .app-shell {
     padding: 2rem 1rem;

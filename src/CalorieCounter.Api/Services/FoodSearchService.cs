@@ -29,7 +29,7 @@ public sealed class FoodSearchService
             ?? throw new InvalidOperationException("Food data file did not contain any records.");
     }
 
-    public FoodSearchResponse Search(string query)
+    public FoodSearchResponse Search(string query, int skip = 0)
     {
         var normalizedQuery = query.Trim().ToLowerInvariant();
         var matches = _foods
@@ -37,6 +37,7 @@ public sealed class FoodSearchService
             .ToList();
 
         var results = matches
+            .Skip(skip)
             .Take(DefaultResultLimit)
             .Select(food => new FoodSearchItem(
                 food.FoodCode,

@@ -73,6 +73,36 @@ function App() {
     }
   }
 
+  const handleLoadMore = async () => {
+    const trimmedQuery = query.trim()
+    if (!trimmedQuery) return
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch(
+        `/api/foods/search?q=${encodeURIComponent(trimmedQuery)}&skip=${results.length}`,
+      )
+
+      if (!response.ok) {
+        const problem = (await response.json()) as { detail?: string; title?: string }
+        throw new Error(problem.detail ?? problem.title ?? 'Loading more results failed.')
+      }
+
+      const data = (await response.json()) as FoodSearchResponse
+      setResults((prev) => [...prev, ...data.results])
+      setTotalMatches(data.totalMatches)
+    } catch (error) {
+      setWarning(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong while loading more results.',
+      )
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleClear = () => {
     setQuery('')
     setResults([])
@@ -86,7 +116,7 @@ function App() {
         <p className="eyebrow">Calorie Counter</p>
         <h1>Search USDA MyPyramid food data and compare calories by portion.</h1>
         <p className="summary">
-          Enter a food description, run a search, and review up to 25 matching
+          Enter a food description, run a search, and review matching
           foods with their portion sizes and calories.
         </p>
       </section>
@@ -151,6 +181,17 @@ function App() {
                   </li>
                 ))}
               </ul>
+            )}
+
+            {results.length > 0 && results.length < totalMatches && (
+              <button
+                className="load-more-button"
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Load more'}
+              </button>
             )}
           </div>
         </article>
