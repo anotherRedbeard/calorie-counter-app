@@ -74,6 +74,20 @@
   border-color: #2563eb;
 }
 
+.search-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.search-hint code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #f1f5f9;
+  font-size: 0.85em;
+}
+
 .button-row {
   display: flex;
   gap: 0.75rem;
