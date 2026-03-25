@@ -43,6 +43,18 @@ The search endpoint supports `*` as a wildcard character for flexible matching:
 
 All searches are case-insensitive. When no `*` is present the search falls back to a simple substring match.
 
+## Search indexing strategy
+
+The backend builds an in-memory n-gram index when it starts (using 1- to 3-character n-grams from each record's `searchName`).
+
+At query time, the API:
+
+1. normalizes the incoming query
+2. looks up candidate records by intersecting indexed n-gram posting lists
+3. applies the existing substring match and result limiting rules to preserve behavior and ordering
+
+This avoids relying solely on scanning the entire food array for every search request while keeping local development simple.
+
 ## Data transformation
 
 Generate the searchable food JSON from the USDA MyPyramid source:
@@ -52,6 +64,8 @@ python3 scripts/transform_mypyramid_data.py
 ```
 
 The transform script downloads the USDA ZIP into `data/raw/` when needed, reads `Food_Display_Table.xml`, and writes normalized search records to `src/CalorieCounter.Api/Data/food-data.json`.
+
+No additional index artifact is required: the API rebuilds the in-memory index from this generated JSON at startup.
 
 Each generated record includes:
 
