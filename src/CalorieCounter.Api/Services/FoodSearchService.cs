@@ -108,6 +108,8 @@ public sealed class FoodSearchService
                         _nGramIndex[nGram] = indices;
                     }
 
+                    // Foods are indexed in source-order, so posting lists stay sorted.
+                    // IntersectSorted relies on this property.
                     indices.Add(index);
                 }
             }
